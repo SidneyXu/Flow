@@ -16,6 +16,9 @@
         <module>flow-data-service</module>
         <module>flow-mongo-service</module>
         <module>example</module>
+        <module>flow-server-sdk</module>
+        <module>../flow-client-sdk</module>
+        <module>flow-client-sdk</module>
     </modules>
 
     <properties>

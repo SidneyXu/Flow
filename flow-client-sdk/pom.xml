@@ -9,12 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flow-sdk</artifactId>
+    <artifactId>flow-client-sdk</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.bookislife</groupId>
-            <artifactId>flow-core</artifactId>
+            <artifactId>flow-sdk</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -27,5 +27,15 @@
             <artifactId>flow-mongo-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.bookislife</groupId>
+            <artifactId>flow-client-sdk</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bookislife</groupId>
+            <artifactId>flow-server-sdk</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

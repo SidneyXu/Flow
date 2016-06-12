@@ -9,13 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flow-sdk</artifactId>
+    <artifactId>flow-server-sdk</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.bookislife</groupId>
-            <artifactId>flow-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+
 </project>
