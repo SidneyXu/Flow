@@ -19,6 +19,11 @@ public class FlowException extends Exception {
         this.code = code;
     }
 
+    public FlowException(String message, Throwable cause) {
+        super(message, cause);
+        this.code = -1;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("FlowException{");
