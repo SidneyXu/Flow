@@ -36,7 +36,12 @@ public class DataResource {
         String tableName = request.getParam("className");
         String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
         String bodyString = context.getBodyAsString();
-        BaseEntity entity = storage.insert(databaseName, tableName, bodyString);
+        BaseEntity entity = null;
+        try {
+            entity = storage.insert(databaseName, tableName, bodyString);
+        } catch (FlowException e) {
+            e.printStackTrace();
+        }
         context.response().end(ResponseCreator.newCreateResponse(entity));
     }
 
@@ -63,7 +68,11 @@ public class DataResource {
         String tableName = request.getParam("className");
         String objectId = request.getParam("objectId");
         String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
-        int n = storage.delete(databaseName,tableName,objectId);
+        try {
+            int n = storage.delete(databaseName,tableName,objectId);
+        } catch (FlowException e) {
+            e.printStackTrace();
+        }
 
         // TODO: 16/5/26
     }

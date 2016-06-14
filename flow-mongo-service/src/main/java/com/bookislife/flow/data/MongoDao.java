@@ -57,8 +57,8 @@ public class MongoDao implements BaseDao {
 
     @Override
     public String insert(String database, String tableName, BaseEntity entity) {
-        MongoDocument mongoDocument = (MongoDocument) entity;
-        Document document = toDocument(mongoDocument);
+        MongoEntity mongoEntity = (MongoEntity) entity;
+        Document document = toDocument(mongoEntity);
         getCollection(database, tableName)
                 .insertOne(document);
         Object id = document.get("_id");
@@ -77,8 +77,8 @@ public class MongoDao implements BaseDao {
                 .getModifiedCount();
     }
 
-    private Document toDocument(MongoDocument mongoDocument) {
-        Document document = mongoDocument.document;
+    private Document toDocument(MongoEntity mongoEntity) {
+        Document document = mongoEntity.document;
         return new ObjectTraverser<Document>(document) {
             @Override
             public boolean visit(Object object) {
@@ -103,7 +103,7 @@ public class MongoDao implements BaseDao {
 
     private List<Document> toDocuments(List<? extends BaseEntity> mongoDocuments) {
         return mongoDocuments.stream()
-                .map(baseEntity -> toDocument((MongoDocument) baseEntity))
+                .map(baseEntity -> toDocument((MongoEntity) baseEntity))
                 .collect(Collectors.toList());
     }
 
@@ -158,6 +158,24 @@ public class MongoDao implements BaseDao {
         }.transve();
     }
 
+    private MongoEntity toMongoEntity(Document document) {
+        Document documentResult = new ObjectTraverser<Document>(document) {
+            @Override
+            public boolean visit(Object object) {
+                if (object instanceof Map) {
+                    Map map = (Map) object;
+                    if (map.containsKey("_id") && map.get("_id") instanceof String) {
+                        String id = (String) map.get("_id");
+                        map.remove("_id");
+                        map.put("id", id);
+                    }
+                }
+                return true;
+            }
+        }.transve();
+        return new MongoEntity(documentResult);
+    }
+
     // TODO: 5/27/16
     private Document toDocument(BaseQuery query) {
         if (null == query) return new Document();
@@ -208,7 +226,7 @@ public class MongoDao implements BaseDao {
                 .find(idEq(id))
                 .maxTime(TIMEOUT, TimeUnit.MILLISECONDS)
                 .first();
-        return new MongoDocument(document);
+        return toMongoEntity(document);
     }
 
     @Override
@@ -221,7 +239,7 @@ public class MongoDao implements BaseDao {
         Validator.assertHasNext(iterator, "Object not found.");
 
         Document document = iterator.next();
-        return new MongoDocument(document);
+        return new MongoEntity(document);
     }
 
     @Override
@@ -269,7 +287,7 @@ public class MongoDao implements BaseDao {
         List<BaseEntity> entities = new ArrayList<>();
 
         iterator.forEachRemaining(document ->
-                entities.add(new MongoDocument(document)));
+                entities.add(new MongoEntity(document)));
         return entities;
     }
 

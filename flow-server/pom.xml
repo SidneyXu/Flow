@@ -14,10 +14,6 @@
     <dependencies>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
         </dependency>
         <dependency>
@@ -31,14 +27,6 @@
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -58,10 +46,6 @@
             <groupId>com.bookislife</groupId>
             <artifactId>flow-mongo-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
 </project>

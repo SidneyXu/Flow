@@ -1,7 +1,6 @@
 package com.bookislife.flow.sdk.web;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,14 +43,14 @@ public class FResponse {
 
     public byte[] getBodyAsByte() {
         if (inputStream == null) return null;
-        ByteOutputStream outputStream = new ByteOutputStream();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[4098];
         int len = -1;
         try {
             while ((len = inputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, len);
             }
-            return outputStream.getBytes();
+            return outputStream.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

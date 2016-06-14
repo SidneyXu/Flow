@@ -12,7 +12,7 @@ public class MongoSchemaService implements DBSchemaService {
 
     @Override
     public String insert(BaseSchema schema) {
-        MongoDocument document = toDocument(schema);
+        MongoEntity document = toDocument(schema);
         long now = System.currentTimeMillis();
         document.setCreatedAt(now);
         document.setUpdatedAt(now);
@@ -21,11 +21,11 @@ public class MongoSchemaService implements DBSchemaService {
 
     @Override
     public BaseSchema get(String id) {
-        MongoDocument document = (MongoDocument) mongoDao.findById(SCHEMA_DATABASE_NAME, SCHEMA_TABLE_NAME, id);
+        MongoEntity document = (MongoEntity) mongoDao.findById(SCHEMA_DATABASE_NAME, SCHEMA_TABLE_NAME, id);
         return MongoSchema.toSchema(document);
     }
 
-    private MongoDocument toDocument(BaseSchema schema) {
+    private MongoEntity toDocument(BaseSchema schema) {
         if (schema instanceof MongoSchema) {
             return ((MongoSchema) schema).toDocument();
         }

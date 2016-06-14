@@ -13,16 +13,16 @@ public class MongoSchema extends BaseSchema {
         super(databaseName, tableName);
     }
 
-    public MongoDocument toDocument() {
+    public MongoEntity toDocument() {
         Map<String, Object> map = new HashMap<>();
         map.put(FIELD_DATABASE_NAME, getDatabaseName());
         map.put(FIELD_TABLE_NAME, getTableName());
         map.put(FIELD_COLUMNS_INFO, convertColumnInfos());
-        return new MongoDocument(Collections.unmodifiableMap(map));
+        return new MongoEntity(Collections.unmodifiableMap(map));
     }
 
-    public static MongoSchema toSchema(MongoDocument mongoDocument) {
-        Map<String, Object> data = mongoDocument.getData();
+    public static MongoSchema toSchema(MongoEntity mongoEntity) {
+        Map<String, Object> data = mongoEntity.getData();
         String databaseName = (String) data.get(FIELD_DATABASE_NAME);
         String tableName = (String) data.get(FIELD_TABLE_NAME);
         MongoSchema schema = new MongoSchema(databaseName, tableName);

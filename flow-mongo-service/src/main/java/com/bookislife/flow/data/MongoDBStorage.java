@@ -30,7 +30,7 @@ public class MongoDBStorage implements DBStorage {
 
     @Override
     public BaseEntity insert(String database, String tableName, String data) {
-        MongoDocument document = JacksonDecoder.decode(data, MongoDocument.class);
+        MongoEntity document = JacksonDecoder.decode(data, MongoEntity.class);
         long current = System.currentTimeMillis();
         document.setCreatedAt(current);
         document.setUpdatedAt(current);

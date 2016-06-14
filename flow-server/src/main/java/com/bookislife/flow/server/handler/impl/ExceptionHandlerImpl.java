@@ -24,10 +24,10 @@ public class ExceptionHandlerImpl implements ExceptionHandler {
             msg = throwable.getMessage();
             if (throwable instanceof FlowException) {
                 logger.error(msg, throwable);
-                code = ((FlowException) throwable).code;
+                code = ((FlowException) throwable).errorCode;
             }
         }
-        // TODO: 16/5/4 process status code
+        // TODO: 16/5/4 process status errorCode
         context.response()
                 .setStatusCode(statusCode)
                 .end(JacksonJsonBuilder.create()
