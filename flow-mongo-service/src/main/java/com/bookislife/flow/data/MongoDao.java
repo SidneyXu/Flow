@@ -164,10 +164,10 @@ public class MongoDao implements BaseDao {
             public boolean visit(Object object) {
                 if (object instanceof Map) {
                     Map map = (Map) object;
-                    if (map.containsKey("_id") && map.get("_id") instanceof String) {
-                        String id = (String) map.get("_id");
+                    if (map.containsKey("_id") && map.get("_id") instanceof ObjectId) {
+                        ObjectId id = (ObjectId) map.get("_id");
                         map.remove("_id");
-                        map.put("id", id);
+                        map.put("id", id.toHexString());
                     }
                 }
                 return true;
@@ -249,7 +249,7 @@ public class MongoDao implements BaseDao {
         int limit = DEFAULT_LIMIT;
         int skip = 0;
         Map<String, Object> sortMap = null;
-        if (query.getConstraint() != null) {
+        if (query != null && query.getConstraint() != null) {
             Constraint constraint = query.getConstraint();
             if (constraint.getLimit() > 0) {
                 limit = constraint.getLimit();
@@ -273,7 +273,7 @@ public class MongoDao implements BaseDao {
         if (sortMap != null) {
             iterable.sort(new Document(sortMap));
         }
-        if (query.getProjection() != null) {
+        if (query != null && query.getProjection() != null) {
             Map<String, Object> projectMap = new HashMap<>();
             query.getProjection()
                     .getSelects()

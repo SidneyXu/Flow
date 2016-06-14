@@ -15,10 +15,10 @@ public class MongoEntity extends BaseEntity {
     private Map<String, Object> data;
     public Document document;
 
-    public MongoEntity(Document document) {
-        this.document = document;
-        this.data = document;
-    }
+//    public MongoEntity(Document document) {
+//        this.document = document;
+//        this.data = document;
+//    }
 
     @JsonCreator
     public MongoEntity(Map<String, Object> map) {
@@ -58,6 +58,14 @@ public class MongoEntity extends BaseEntity {
     public void setUpdatedAt(long updatedAt) {
         super.setUpdatedAt(updatedAt);
         document.put(FIELD_UPDATED_AT, updatedAt);
+    }
+
+    public Integer getInt(String key) {
+        return document.getInteger(key);
+    }
+
+    public String getString(String key) {
+        return document.getString(key);
     }
 
     public Map<String, Object> getData() {
