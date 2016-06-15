@@ -127,7 +127,7 @@ class MongoDBStorageTest {
     }
 
     @Test
-    fun countByQuery(){
+    fun countByQuery() {
         perpareQueryData()
         val query = """
             {
@@ -145,33 +145,266 @@ class MongoDBStorageTest {
         assert(2 == n.toInt())
     }
 
-    fun update(){
+    fun update() {
 
 
     }
 
-    fun testEq(){
+    @Test
+    fun testEq() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") == 20) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}eq":20
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testNotEq() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") == 20) {
+                0
+            } else {
+                1
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}ne":20
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testGreater() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") > 20) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}gt":20
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testGreaterThanOrEqualTo() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") >= 20) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}gte":20
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testSmaller() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") < 20) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}lt":20
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testSmallerThanOrEqualTo() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") <= 20) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}lte":20
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testIn() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") == 20 || it.getInt("age") == 18) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}in":[20, 18]
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testNotIn() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") != 20 && it.getInt("age") != 18) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}nin":[20, 18]
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testExist() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") != 20 && it.getInt("age") != 18) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}exists":"age"
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    fun testLink() {
 
     }
 
-    fun testNotEq(){
+    fun testComplex() {
 
     }
 
-    fun testLarger(){
-
-
-    }
-
-    fun testSmaller(){
+    fun errorGrammar() {
 
     }
 
-    fun testLink(){
-
-    }
-
-    fun testComplex(){
+    fun unknowOperator() {
 
     }
 
@@ -182,14 +415,15 @@ class MongoDBStorageTest {
                 Triple("Terry", 20, false),
                 Triple("Anna", 22, false),
                 Triple("Ken", 22, true),
-                Triple("Ryu", 19, false)
+                Triple("Ryu", 19, false),
+                Triple("Beer", 10, null)
         )
         return list.map {
             val data = """
         {
             "name":"${it.first}",
             "age": ${it.second},
-            "admin":${it.third}
+            ${if(it.third!=null) "admin":${it.third} else ""}
         }
         """
             stoarge.insert(databaseName, tableName, data)
