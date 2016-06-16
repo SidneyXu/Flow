@@ -11,5 +11,16 @@
 
     <artifactId>flow-server-sdk</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.bookislife</groupId>
+            <artifactId>flow-sdk</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bookislife</groupId>
+            <artifactId>flow-server</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>

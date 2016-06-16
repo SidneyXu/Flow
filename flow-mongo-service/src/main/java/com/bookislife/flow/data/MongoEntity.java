@@ -68,6 +68,10 @@ public class MongoEntity extends BaseEntity {
         return document.getString(key);
     }
 
+    public Boolean getBoolean(String key) {
+        return document.getBoolean(key);
+    }
+
     public Map<String, Object> getData() {
         return Collections.unmodifiableMap(data);
     }

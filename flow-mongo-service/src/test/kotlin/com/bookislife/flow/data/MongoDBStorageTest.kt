@@ -93,6 +93,11 @@ class MongoDBStorageTest {
         entities.forEach {
             val entity = it as MongoEntity
             assert(entity.getInt("age") == 20)
+
+            assert(entity.id != null)
+            assert(entity.createdAt != 0L)
+            assert(entity.updatedAt != 0L)
+            assert(entity.createdAt == entity.updatedAt)
         }
     }
 
@@ -145,6 +150,7 @@ class MongoDBStorageTest {
         assert(2 == n.toInt())
     }
 
+    //TODO
     fun update() {
 
 
@@ -369,7 +375,7 @@ class MongoDBStorageTest {
     fun testExist() {
         val list = perpareQueryData()
         val expect = list.map {
-            if (it.getInt("age") != 20 && it.getInt("age") != 18) {
+            if (it.getBoolean("admin")!=null) {
                 1
             } else {
                 0
@@ -380,8 +386,35 @@ class MongoDBStorageTest {
                "tableName" : "$tableName",
                "condition": {
                    "where" : {
-                       "age":{
-                       "${'$'}exists":"age"
+                       "admin":{
+                       "${'$'}exists":true
+                       }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testNotExist() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getBoolean("admin")==null) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "admin":{
+                       "${'$'}exists":false
                        }
                    }
                }
@@ -422,8 +455,12 @@ class MongoDBStorageTest {
             val data = """
         {
             "name":"${it.first}",
-            "age": ${it.second},
-            ${if(it.third!=null) "admin":${it.third} else ""}
+            "age": ${it.second}
+            ${if (it.third != null) {
+                ",\"admin\":" + it.third
+            } else {
+                ""
+            }}
         }
         """
             stoarge.insert(databaseName, tableName, data)

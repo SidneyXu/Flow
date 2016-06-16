@@ -287,7 +287,7 @@ public class MongoDao implements BaseDao {
         List<BaseEntity> entities = new ArrayList<>();
 
         iterator.forEachRemaining(document ->
-                entities.add(new MongoEntity(document)));
+                entities.add(toMongoEntity(document)));
         return entities;
     }
 

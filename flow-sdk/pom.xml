@@ -17,5 +17,11 @@
             <artifactId>flow-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <!--todo actually should not required-->
+        <dependency>
+            <groupId>com.bookislife</groupId>
+            <artifactId>flow-data-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
