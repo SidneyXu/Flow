@@ -3,6 +3,7 @@ package com.bookislife.flow.data;
 import com.bookislife.flow.core.domain.BaseEntity;
 import com.bookislife.flow.core.exception.FlowException;
 import com.bookislife.flow.data.utils.JacksonDecoder;
+import com.bookislife.flow.data.utils.QueryValidator;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -25,6 +26,9 @@ public class MongoDBStorage implements DBStorage {
     @Override
     public List<BaseEntity> findAll(String database, String tableName, String query) throws FlowException {
         MongoQuery mongoQuery = JacksonDecoder.decode(query, MongoQuery.class);
+        if(mongoQuery!=null) {
+            QueryValidator.validate(mongoQuery.getCondition());
+        }
         return mongoDao.findAll(database, tableName, mongoQuery);
     }
 

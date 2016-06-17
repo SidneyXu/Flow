@@ -51,8 +51,7 @@ class ConditionTest : BaseTest() {
     @Test
     fun testLike() {
         val condition = Condition.newBuilder()
-                .addCondition("\$like", "name", "/Jack.*/i")
-                .addCondition("\$exists", "name", true)
+                .like("name","Jack.*", "i")
                 .create()
         write(condition)
     }
@@ -69,6 +68,43 @@ class ConditionTest : BaseTest() {
                 id: {
                   "$link":"t_blog.id"
                 }
+            }
+         */
+    }
+
+    @Test
+    fun testOr() {
+        val condition1 = Condition.newBuilder()
+                .lt("age", 20)
+                .create()
+        val condition2 = Condition.newBuilder()
+                .eq("admin", true)
+                .create()
+        val cond = Condition.newBuilder()
+                .or(condition1, condition2)
+                .eq("name","Jack")
+                .ne("age",10)
+                .create()
+        write(cond)
+        /*
+            {
+              "where" : {
+                "$or" : [ {
+                  "age" : {
+                    "$lt" : 20
+                  }
+                }, {
+                  "admin" : {
+                    "$eq" : true
+                  }
+                } ],
+                "name" : {
+                  "$eq" : "Jack"
+                },
+                "age" : {
+                  "$ne" : 10
+                }
+              }
             }
          */
     }

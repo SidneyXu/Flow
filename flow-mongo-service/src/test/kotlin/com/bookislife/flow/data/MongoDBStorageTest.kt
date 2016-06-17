@@ -375,7 +375,7 @@ class MongoDBStorageTest {
     fun testExist() {
         val list = perpareQueryData()
         val expect = list.map {
-            if (it.getBoolean("admin")!=null) {
+            if (it.getBoolean("admin") != null) {
                 1
             } else {
                 0
@@ -402,7 +402,7 @@ class MongoDBStorageTest {
     fun testNotExist() {
         val list = perpareQueryData()
         val expect = list.map {
-            if (it.getBoolean("admin")==null) {
+            if (it.getBoolean("admin") == null) {
                 1
             } else {
                 0
@@ -425,6 +425,94 @@ class MongoDBStorageTest {
         assert(expect == result.size)
     }
 
+    @Test
+    fun testOr() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getInt("age") == 22 || it.getBoolean("admin") == false) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "${'$'}or":[{
+                            "age": {
+                                "${'$'}eq":22
+                            }},{
+                            "admin": {
+                                "${'$'}eq":false
+                            }
+                        }]
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testLike() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getString("name").startsWith("T")) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "name":{
+                            "${'$'}regex":"/^T/"
+                        }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        result.forEach { println(it) }
+        assert(expect == result.size)
+    }
+
+    @Test
+    fun testLikeWithFlag() {
+        val list = perpareQueryData()
+        val expect = list.map {
+            if (it.getString("name").startsWith("T", true)) {
+                1
+            } else {
+                0
+            }
+        }.sum()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "name":{
+                            "${'$'}regex":"/^T/i"
+                        }
+                   }
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        result.forEach { println(it) }
+        assert(expect == result.size)
+    }
+
     fun testLink() {
 
     }
@@ -433,12 +521,38 @@ class MongoDBStorageTest {
 
     }
 
+    @Test
     fun errorGrammar() {
-
+        perpareQueryData()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "a":/a/
+                   }
+               }
+            }
+        """
+        stoarge.findAll(databaseName, tableName, query)
     }
 
+    @Test
     fun unknowOperator() {
-
+        perpareQueryData()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}all":[20]
+                       }
+                   }
+               }
+            }
+        """
+        stoarge.findAll(databaseName, tableName, query)
     }
 
     private fun perpareQueryData(): List<MongoEntity> {
@@ -446,7 +560,7 @@ class MongoDBStorageTest {
                 Triple("Peter", 20, true),
                 Triple("Jane", 18, true),
                 Triple("Terry", 20, false),
-                Triple("Anna", 22, false),
+                Triple("tina", 22, false),
                 Triple("Ken", 22, true),
                 Triple("Ryu", 19, false),
                 Triple("Beer", 10, null)
@@ -467,6 +581,44 @@ class MongoDBStorageTest {
         }.map {
             it as MongoEntity
         }
+    }
+
+    private fun perpareLinkData(): Pair<List<MongoEntity>, List<MongoEntity>> {
+        val blogList = listOf(
+                "One",
+                "Two",
+                "Three",
+                "Four",
+                "Five"
+        )
+        val blogEntities = blogList.map {
+            val data = """
+        {
+            "name":$it
+        }
+        """
+            stoarge.insert(databaseName, "t_blog", data)
+        }.map {
+            it as MongoEntity
+        }
+
+        val commentList = listOf(
+                "One Comment",
+                "Two Comment",
+                "Three Comment"
+        )
+        val commentEntities = commentList.map {
+            val data = """
+        {
+            "name":$it
+        }
+        """
+            stoarge.insert(databaseName, "t_blog", data)
+        }.map {
+            it as MongoEntity
+        }
+
+        return Pair(blogEntities, commentEntities)
     }
 
     class BaseModule : AbstractModule() {

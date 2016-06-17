@@ -4,6 +4,7 @@ import com.bookislife.flow.core.domain.BaseEntity;
 import com.bookislife.flow.core.exception.FlowException;
 import com.bookislife.flow.core.utils.ObjectTraverser;
 import com.bookislife.flow.core.utils.Validator;
+import com.bookislife.flow.data.utils.QueryValidator;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.CountOptions;
@@ -17,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -151,6 +153,20 @@ public class MongoDao implements BaseDao {
                                 }
                             }
                         }
+                    } else if (map.containsKey("$regex") && map.get("$regex") instanceof String) {
+                        String regex = (String) map.get("$regex");
+                        int flag = 0;
+                        String[] array = regex.split("/");
+                        if (regex.lastIndexOf('/') != regex.length() - 1) {
+                            String strflag = array[2];
+                            if (strflag.contains("i")) {
+                                flag = Pattern.CASE_INSENSITIVE;
+                            }
+                            if (strflag.contains("n")) {
+                                flag = flag & Pattern.MULTILINE;
+                            }
+                        }
+                        map.put("$regex", Pattern.compile(array[1], flag));
                     }
                 }
                 return true;
