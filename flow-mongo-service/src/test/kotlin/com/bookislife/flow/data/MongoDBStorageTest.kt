@@ -151,9 +151,37 @@ class MongoDBStorageTest {
     }
 
     //TODO
+    @Test
     fun update() {
+        perpareQueryData()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                       "age":{
+                       "${'$'}eq":20
+                       }
+                   }
+               }
+            }
+        """
+        val modifier = """
+        {
+            "modifiers":{
+                "${'$'}set":{
+                    "name":"Foobar"
+                }
+            }
+        }
+        """
+        val n = stoarge.update(databaseName, tableName, query, modifier)
+        println(n)
 
-
+        val result = stoarge.findAll(databaseName, tableName, query)
+        result.forEach {
+            println(it)
+        }
     }
 
     @Test
@@ -513,12 +541,162 @@ class MongoDBStorageTest {
         assert(expect == result.size)
     }
 
-    fun testLink() {
+    @Test
+    fun updateLink() {
+        val blogDoc = """
+        {
+            "name":"Blog One"
+        }
+        """
+        val blog = stoarge.insert(databaseName, "t_blog", blogDoc)
 
+        val commentDoc = """
+        {
+            "name":"Comment One on Blog One"
+        }
+        """
+        val comment = stoarge.insert(databaseName, "t_comment", commentDoc)
+
+        val query = """
+            {
+               "tableName" : "t_comment",
+               "condition": {
+                   "where" : {
+                       "id":{
+                            "${'$'}eq":"${comment.id}"
+                        }
+                   }
+               }
+            }
+        """
+        val modifies = """
+        {
+            "modifiers":{
+                "${'$'}set":{
+                    "blog_id":{
+                        "${'$'}ref":"t_blog",
+                        "${'$'}id":"${blog.id}"
+                    }
+                }
+            }
+        }
+        """
+        val n = stoarge.update(databaseName, "t_comment", query, modifies)
+        println(n)
+    }
+
+    @Test
+    fun testLink() {
+        val query = """
+            {
+               "tableName" : "t_comment",
+               "condition": {
+                   "where" : {
+                       "blog_id":{
+                            "${'$'}ref":"t_blog",
+                            "${'$'}id":"57649c99b740de0b0773ec64"
+                        }
+                   }
+               }
+            }
+        """
+        val comment = stoarge.findAll(databaseName, "t_comment", query)
+        println(comment)
     }
 
     fun testComplex() {
 
+    }
+
+    @Test
+    fun testSkip() {
+        val n = 2
+        val excludes = perpareQueryData()
+                .sortedBy { it.getInt("age") }
+                .take(n)
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                   }
+               },
+               "constraint": {
+                    "sort": "+age",
+                    "skip":$n
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        result.forEach {
+            println(it)
+        }
+        val unexcepted = result.filter {
+            excludes.map {
+                it.id
+            }.contains(it.id)
+        }
+        assert(unexcepted.size == 0)
+    }
+
+    @Test
+    fun testLimit() {
+        perpareQueryData()
+        val n = 3
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                   }
+               },
+               "constraint": {
+                    "limit": $n
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        assert(n == result.size)
+    }
+
+    @Test
+    fun testSelect() {
+        perpareQueryData()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                   }
+               },
+               "projection": {
+                    "selects": ["name","createdAt"]
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        result.forEach { println(it) }
+    }
+
+    @Test
+    fun sort() {
+        perpareQueryData()
+        val query = """
+            {
+               "tableName" : "$tableName",
+               "condition": {
+                   "where" : {
+                   }
+               },
+               "constraint": {
+                    "sort": "-age,+name"
+               }
+            }
+        """
+        val result = stoarge.findAll(databaseName, tableName, query)
+        println(result.size)
+        result.forEach { println(it) }
     }
 
     @Test
@@ -603,7 +781,8 @@ class MongoDBStorageTest {
         }
 
         val commentList = listOf(
-                "One Comment",
+                "One Blog Comment 1",
+                "One Blog Comment 2",
                 "Two Comment",
                 "Three Comment"
         )

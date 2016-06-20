@@ -5,6 +5,7 @@ import com.bookislife.flow.core.exception.FlowException;
 import com.bookislife.flow.core.utils.ObjectTraverser;
 import com.bookislife.flow.core.utils.Validator;
 import com.bookislife.flow.data.utils.QueryValidator;
+import com.mongodb.DBRef;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.CountOptions;
@@ -153,7 +154,17 @@ public class MongoDao implements BaseDao {
                                 }
                             }
                         }
-                    } else if (map.containsKey("$regex") && map.get("$regex") instanceof String) {
+                    }
+
+
+
+//                    else if(map.containsKey("$ref")){
+//                        // TODO: 16/6/18
+//                        String id = (String) map.get("$id");
+//                        String ref= (String) map.get("$ref");
+//                        new DBRef(ref, new ObjectId(ref));
+//                    }
+                else if (map.containsKey("$regex") && map.get("$regex") instanceof String) {
                         String regex = (String) map.get("$regex");
                         int flag = 0;
                         String[] array = regex.split("/");

@@ -1,6 +1,5 @@
 package com.bookislife.flow.data;
 
-import com.bookislife.flow.core.Env;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mongodb.MongoClient;
@@ -13,21 +12,25 @@ import java.util.concurrent.TimeUnit;
  * Created by SidneyXu on 2016/05/03.
  */
 @Singleton
-public class MongoContext {
+public class MongoContext extends DBContext {
 
     private Cache<String, MongoClient> cache;
-    private long cleanerInterval;
 
     public MongoContext() {
-        long expires = Long.parseLong(System.getProperty(Env.Config.DB_CONNECTION_EXPIRES,
-                "" + Env.Default.dbConnectionExpires));
-        cleanerInterval = Long.parseLong(System.getProperty(Env.Config.DB_CLEANER_INTERVAL,
-                "" + Env.Default.dbCleanerInterval));
-
+        super();
         cache = CacheBuilder.newBuilder()
-                .expireAfterAccess(expires, TimeUnit.MILLISECONDS)
+                .expireAfterAccess(getExpires(), TimeUnit.MILLISECONDS)
+                .removalListener(removalNotification -> {
+                    MongoClient client = (MongoClient) removalNotification.getValue();
+                    client.close();
+                })
                 .build();
-        new Cleaner().start();
+        startCleaner();
+    }
+
+    @Override
+    protected void clean() {
+        cache.cleanUp();
     }
 
     public MongoClient getClient(MongoClientOptions options) {
@@ -35,19 +38,6 @@ public class MongoContext {
             return cache.get(options.getConnectionUrl(), () -> new MongoClient(options.getServerAddress()));
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    class Cleaner extends Thread {
-        @Override
-        public void run() {
-            while (true) {
-                cache.cleanUp();
-                try {
-                    sleep(cleanerInterval);
-                } catch (InterruptedException ignored) {
-                }
-            }
         }
     }
 }

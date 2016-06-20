@@ -18,6 +18,7 @@
         <module>example</module>
         <module>flow-server-sdk</module>
         <module>flow-client-sdk</module>
+        <module>flow-mysql-service</module>
     </modules>
 
     <properties>
