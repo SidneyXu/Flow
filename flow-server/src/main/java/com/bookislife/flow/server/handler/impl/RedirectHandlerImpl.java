@@ -8,7 +8,7 @@ import io.vertx.rxjava.ext.web.RoutingContext;
  */
 public class RedirectHandlerImpl implements RedirectHandler {
     @Override
-    public void handle(RoutingContext event) {
-
+    public void handle(RoutingContext context) {
+        context.next();
     }
 }

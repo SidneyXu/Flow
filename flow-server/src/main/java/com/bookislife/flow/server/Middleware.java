@@ -16,27 +16,24 @@ import javax.inject.Inject;
  */
 public class Middleware {
 
+    @Inject
     private ExceptionHandler exceptionHandler;
 
-    private ResponseTimeHandler responseTimeHandler;
-
+    @Inject
     private StaticResourceHandler staticResourceHandler;
 
+    @Inject
     private CrossDomainHandler crossDomainHandler;
 
-    private RedirectHandler redirectHandler;
-
     @Inject
-    public Middleware(ResponseTimeHandler responseTimeHandler) {
-        this.responseTimeHandler = responseTimeHandler;
-    }
+    private RedirectHandler redirectHandler;
 
     public ExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
 
     public ResponseTimeHandler getResponseTimeHandler() {
-        return responseTimeHandler;
+        return ResponseTimeHandler.create();
     }
 
     public StaticResourceHandler getStaticResourceHandler() {

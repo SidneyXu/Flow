@@ -13,5 +13,6 @@ public class StaticResourceHandlerImpl implements StaticResourceHandler {
     public void handle(RoutingContext context) {
         HttpServerRequest request=context.request();
         // TODO: 16/6/2
+        context.next();
     }
 }

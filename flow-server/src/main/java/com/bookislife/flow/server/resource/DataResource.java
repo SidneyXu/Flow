@@ -42,7 +42,7 @@ public class DataResource {
         } catch (FlowException e) {
             e.printStackTrace();
         }
-        context.response().end(ResponseCreator.newCreateResponse(entity));
+        context.response().putHeader("Content-Type","application/json").end(ResponseCreator.newCreateResponse(entity));
     }
 
     @GET

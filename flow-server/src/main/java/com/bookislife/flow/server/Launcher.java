@@ -63,7 +63,7 @@ public class Launcher extends AbstractVerticle {
         router.route().handler(middleware.getCookieHandler());
         router.route().handler(middleware.getBodyHandler());
         // TODO: 16/6/2
-        router.route().handler(middleware.getStaticResourceHandler());
+//        router.route().handler(middleware.getStaticResourceHandler());
         router.route().handler(middleware.getRedirectHandler());
         router.route().handler(middleware.getCrossDomainHandler());
 

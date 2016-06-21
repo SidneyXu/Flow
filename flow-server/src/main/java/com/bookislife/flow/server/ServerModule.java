@@ -20,14 +20,6 @@ public class ServerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-//        MongoClientOptions options = MongoClientOptions.newBuilder()
-//                .url("localhost")
-//                .create();
-//        bind(MongoClientOptions.class).to(options);
-//        bind(MongoDao.class);
-
         install(new DataServiceModule());
-//        bind(DBStorage.class).to(MongoDBStorage.class);
-
     }
 }

@@ -19,7 +19,7 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="com.bookislife.flow">
+    <logger name="com.bookislife.flow.server">
         <level value="DEBUG"/>
         <appender-ref ref="FILE"/>
     </logger>
