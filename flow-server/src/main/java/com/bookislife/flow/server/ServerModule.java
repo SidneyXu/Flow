@@ -10,14 +10,6 @@ import io.vertx.rxjava.core.Vertx;
  */
 public class ServerModule extends AbstractModule {
 
-    private final Vertx vertx;
-    private final JsonObject config;
-
-    public ServerModule(Vertx vertx, JsonObject config) {
-        this.vertx = vertx;
-        this.config = config;
-    }
-
     @Override
     protected void configure() {
         install(new DataServiceModule());

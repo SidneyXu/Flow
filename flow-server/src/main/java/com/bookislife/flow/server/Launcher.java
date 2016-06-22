@@ -1,20 +1,23 @@
 package com.bookislife.flow.server;
 
+import com.bookislife.flow.core.exception.FlowException;
+import com.bookislife.flow.server.utils.ResponseCreator;
 import com.bookislife.flow.server.utils.Runner;
 import com.bookislife.flow.server.web.ResourceDescriptor;
 import com.bookislife.flow.server.web.ResourceLoader;
 import com.bookislife.flow.server.web.ResourceResolver;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.ext.web.Route;
 import io.vertx.rxjava.ext.web.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -29,7 +32,6 @@ public class Launcher extends AbstractVerticle {
 
     public static final Logger logger = LoggerFactory.getLogger(Launcher.class);
 
-    private JsonObject config;
     private Injector injector;
     private ServerConfig serverConfig;
 
@@ -43,14 +45,13 @@ public class Launcher extends AbstractVerticle {
     public void start() throws Exception {
         initConfig();
 
-        // web server
+        // init web server
         Router router = Router.router(vertx);
         registerGlobalHandler(router);
         registerResourceHandler(router);
 
-        // TODO: 5/25/16
+        // TODO: 5/25/16 performance
         HttpServerOptions options = new HttpServerOptions();
-
         vertx.createHttpServer(options)
                 .requestHandler(router::accept)
                 .listen(serverConfig.port);
@@ -58,6 +59,7 @@ public class Launcher extends AbstractVerticle {
 
     private void registerGlobalHandler(Router router) {
         Middleware middleware = injector.getInstance(Middleware.class);
+
         router.route().failureHandler(middleware.getExceptionHandler());
         router.route().handler(middleware.getResponseTimeHandler());
         router.route().handler(middleware.getCookieHandler());
@@ -66,7 +68,6 @@ public class Launcher extends AbstractVerticle {
 //        router.route().handler(middleware.getStaticResourceHandler());
         router.route().handler(middleware.getRedirectHandler());
         router.route().handler(middleware.getCrossDomainHandler());
-
     }
 
     private void applyRoute(Route route, ResourceDescriptor cd, ResourceDescriptor md) {
@@ -92,7 +93,6 @@ public class Launcher extends AbstractVerticle {
 
     private void registerResourceHandler(Router rootRouter) {
         ResourceLoader resourceLoader = new ResourceLoader(Launcher.class.getClassLoader());
-//        Set<Class<?>> classSet = resourceLoader.scanPackage("com.bookislife.flow.resource");
         Set<Class<?>> classSet = resourceLoader.scanPackage(serverConfig.resourcePath);
 
         classSet.stream()
@@ -103,41 +103,52 @@ public class Launcher extends AbstractVerticle {
                         Object singleton = injector.getInstance(resource.clazz);
 
                         Route route = rootRouter.route();
-
                         applyRoute(route, clazzDescriptor, methodDescriptor);
+                        route.handler(ctx -> CompletableFuture.runAsync(() -> {
 
-                        route.handler(ctx -> {
+                            Method method = methodDescriptor.method;
+                            ImmutableList<String> consumeTypes = methodDescriptor.consumeType;
+                            String defaultConsumeType = MediaType.APPLICATION_JSON;
+                            if (consumeTypes != null && consumeTypes.size() > 0) {
+                                defaultConsumeType = consumeTypes.get(0);
+                            }
 
-                            CompletableFuture.runAsync(() -> {
+                            // TODO: 5/19/16 add interceptor
 
-                                Method method = methodDescriptor.method;
-                                // TODO: 5/19/16 interceptor
-
-                                try {
-                                    assert method != null;
-                                    method.invoke(singleton, ctx);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    // TODO: 5/19/16
-                                    e.printStackTrace();
+                            try {
+                                assert method != null;
+                                Object result = method.invoke(singleton, ctx);
+                                if (result != null) {
+                                    if (defaultConsumeType.contains(MediaType.APPLICATION_JSON)) {
+                                        ctx.response()
+                                                .putHeader("Content-Type", MediaType.APPLICATION_JSON)
+                                                .end(result.toString());
+                                    }
                                 }
-                            }, executorService);
+                            } catch (IllegalAccessException e) {
+                                logger.error("error occurs when invoking methods", e);
+                                e.printStackTrace();
+                            }
+                            // process errors from resource handler
+                            catch (InvocationTargetException e) {
+                                Throwable cause=e.getCause();
+                                if(e.getCause() instanceof  FlowException){
+                                    ctx.response().putHeader("Content-Type", MediaType.APPLICATION_JSON).end(ResponseCreator.newErrorResponse((FlowException) cause));
 
-                        });
+                                    return;
+                                }
+                                logger.error("error occurs when invoking methods", e);
+                                ctx.response().putHeader("Content-Type", MediaType.APPLICATION_JSON).end(ResponseCreator.newErrorResponse(cause.getMessage()));
+                            }
+                        }, executorService));
                     });
                 });
     }
 
 
     private void initConfig() {
-        // TODO: 16/5/4
-        config = new JsonObject()
-                .put("rest", new JsonObject()
-                        .put("host", "127.0.0.1")
-                        .put("port", 8080)
-                        .put("dialect", "mongo"));
-
         // ioc
-        injector = Guice.createInjector(new ServerModule(vertx, config));
+        injector = Guice.createInjector(new ServerModule());
 
         serverConfig = new ServerConfig();
     }

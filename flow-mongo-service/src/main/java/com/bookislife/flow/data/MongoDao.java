@@ -186,6 +186,7 @@ public class MongoDao implements BaseDao {
     }
 
     private MongoEntity toMongoEntity(Document document) {
+        if(null==document)return null;
         Document documentResult = new ObjectTraverser<Document>(document) {
             @Override
             public boolean visit(Object object) {

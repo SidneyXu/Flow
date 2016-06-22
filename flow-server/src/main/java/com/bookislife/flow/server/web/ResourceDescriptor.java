@@ -3,10 +3,7 @@ package com.bookislife.flow.server.web;
 
 import com.google.common.collect.ImmutableList;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import java.lang.reflect.Method;
 
 /**
@@ -66,9 +63,18 @@ public class ResourceDescriptor {
         }
         if (method.isAnnotationPresent(HttpMethod.class)) {
             httpMethod = method.getAnnotation(HttpMethod.class).value();
+        } else if (method.isAnnotationPresent(GET.class)) {
+            httpMethod = HttpMethod.GET;
+        } else if (method.isAnnotationPresent(POST.class)) {
+            httpMethod = HttpMethod.POST;
+        } else if (method.isAnnotationPresent(PUT.class)) {
+            httpMethod = HttpMethod.PUT;
+        } else if (method.isAnnotationPresent(DELETE.class)) {
+            httpMethod = HttpMethod.DELETE;
         } else {
             httpMethod = null;
         }
+
     }
 
     @Override

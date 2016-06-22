@@ -31,57 +31,42 @@ public class DataResource {
     @POST
     @Path(":className")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void create(RoutingContext context) {
+    public String create(RoutingContext context) throws FlowException {
         HttpServerRequest request = context.request();
         String tableName = request.getParam("className");
         String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
         String bodyString = context.getBodyAsString();
-        BaseEntity entity = null;
-        try {
-            entity = storage.insert(databaseName, tableName, bodyString);
-        } catch (FlowException e) {
-            e.printStackTrace();
-        }
-        context.response().putHeader("Content-Type","application/json").end(ResponseCreator.newCreateResponse(entity));
+        BaseEntity entity = storage.insert(databaseName, tableName, bodyString);
+        return ResponseCreator.newCreateResponse(entity);
     }
 
     @GET
     @Path(":className/:objectId")
-    public void get(RoutingContext context) {
+    public String get(RoutingContext context) throws FlowException {
         HttpServerRequest request = context.request();
         String tableName = request.getParam("className");
         String objectId = request.getParam("objectId");
         String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
-        BaseEntity entity = null;
-        try {
-            entity = storage.findById(databaseName, tableName, objectId);
-        } catch (FlowException e) {
-            e.printStackTrace();
-        }
-        context.response().end(ResponseCreator.newQueryResponse(entity));
+        BaseEntity entity = storage.findById(databaseName, tableName, objectId);
+        return ResponseCreator.newQueryResponse(entity);
     }
 
     @DELETE
     @Path(":className/:objectId")
-    public void delete(RoutingContext context){
+    public String delete(RoutingContext context) throws FlowException {
         HttpServerRequest request = context.request();
         String tableName = request.getParam("className");
         String objectId = request.getParam("objectId");
         String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
-        try {
-            int n = storage.delete(databaseName,tableName,objectId);
-        } catch (FlowException e) {
-            e.printStackTrace();
-        }
-
-        // TODO: 16/5/26
+        int n = storage.delete(databaseName, tableName, objectId);
+        return ResponseCreator.newDeleteResponse(n);
     }
 
-    @POST
-    @Path(":className/batch")
-    public void batch(RoutingContext context){
-
-    }
+//    @POST
+//    @Path(":className/batch")
+//    public void batch(RoutingContext context) {
+//
+//    }
 
     @PUT
     @Path(":className/:objectId")
@@ -91,6 +76,18 @@ public class DataResource {
         String objectId = request.getParam("objectId");
 
         // TODO: 5/25/16
+    }
+
+    //TODO
+    @POST
+    @Path("count")
+    public String count(RoutingContext context) throws FlowException {
+        HttpServerRequest request = context.request();
+        String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
+        String tableName = request.getParam("className");
+        String query = context.getBodyAsString();
+        long n = storage.count(databaseName, tableName, query);
+        return ResponseCreator.newCountResponse(n);
     }
 
     @POST

@@ -5,6 +5,7 @@ package com.bookislife.flow.core.exception;
  */
 public class FlowException extends Exception {
 
+    public static final int UNKNOWN_ERROR = -1;
     public static final int OBJECT_NOT_FOUND = 200;
 
     public final int errorCode;
@@ -15,7 +16,7 @@ public class FlowException extends Exception {
         this.errorCode = errorCode;
         this.errorMessage = message;
     }
-    
+
     public FlowException(int errorCode, String message) {
         this(errorCode, message, null);
     }

@@ -26,14 +26,14 @@ public class MongoDBStorage implements DBStorage {
     @Override
     public List<BaseEntity> findAll(String database, String tableName, String query) throws FlowException {
         MongoQuery mongoQuery = JacksonDecoder.decode(query, MongoQuery.class);
-        if(mongoQuery!=null) {
+        if (mongoQuery != null) {
             QueryValidator.validate(mongoQuery.getCondition());
         }
         return mongoDao.findAll(database, tableName, mongoQuery);
     }
 
     @Override
-    public BaseEntity insert(String database, String tableName, String data) {
+    public BaseEntity insert(String database, String tableName, String data) throws FlowException {
         MongoEntity document = JacksonDecoder.decode(data, MongoEntity.class);
         long current = System.currentTimeMillis();
         document.setCreatedAt(current);
@@ -69,6 +69,9 @@ public class MongoDBStorage implements DBStorage {
     @Override
     public long count(String database, String tableName, String query) {
         MongoQuery mongoQuery = JacksonDecoder.decode(query, MongoQuery.class);
+        if (tableName == null && mongoQuery != null) {
+            tableName = mongoQuery.getTableName();
+        }
         return mongoDao.count(database, tableName, mongoQuery);
     }
 }

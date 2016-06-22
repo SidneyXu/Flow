@@ -1,5 +1,8 @@
 package com.bookislife.flow.core.domain;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Created by SidneyXu on 2016/04/29.
  */
@@ -18,6 +21,8 @@ public class BaseEntity {
     private String id;
     private boolean enableFlg;
     private boolean deleteFlg;
+
+    protected Map<String, Object> data;
 
     public long getCreatedAt() {
         return createdAt;
@@ -57,5 +62,10 @@ public class BaseEntity {
 
     public void setDeleteFlg(boolean deleteFlg) {
         this.deleteFlg = deleteFlg;
+    }
+
+    public Map<String, Object> getData() {
+        if (null == data) return null;
+        return Collections.unmodifiableMap(data);
     }
 }

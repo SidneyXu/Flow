@@ -2,6 +2,7 @@ package com.bookislife.flow.data;
 
 import com.bookislife.flow.core.domain.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.Document;
 
 import java.util.Collections;
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public class MongoEntity extends BaseEntity {
 
-    private Map<String, Object> data;
+    @JsonIgnore
     public Document document;
 
 //    public MongoEntity(Document document) {
@@ -29,6 +30,9 @@ public class MongoEntity extends BaseEntity {
     @SuppressWarnings("unchecked")
     private void parseData(Map<String, Object> map) {
         data = (Map<String, Object>) map.getOrDefault(FIELD_DATA, null);
+        if (data == null) {
+            data = map;
+        }
         setCreatedAt((Long) map.getOrDefault(FIELD_CREATED_AT, 0L));
         setUpdatedAt((Long) map.getOrDefault(FIELD_UPDATED_AT, getCreatedAt()));
         setId((String) map.getOrDefault(FIELD_ID, null));
@@ -70,10 +74,6 @@ public class MongoEntity extends BaseEntity {
 
     public Boolean getBoolean(String key) {
         return document.getBoolean(key);
-    }
-
-    public Map<String, Object> getData() {
-        return Collections.unmodifiableMap(data);
     }
 
 }

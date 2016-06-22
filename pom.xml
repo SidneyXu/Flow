@@ -19,6 +19,7 @@
         <module>flow-server-sdk</module>
         <module>flow-client-sdk</module>
         <module>flow-mysql-service</module>
+        <module>flow-annotation</module>
     </modules>
 
     <properties>
