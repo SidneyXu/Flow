@@ -4,6 +4,7 @@ import com.bookislife.flow.core.Env;
 import com.bookislife.flow.core.domain.BaseEntity;
 import com.bookislife.flow.core.exception.FlowException;
 import com.bookislife.flow.data.DBStorage;
+import com.bookislife.flow.server.domain.RoutingContextWrapper;
 import com.bookislife.flow.server.utils.ResponseCreator;
 import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.ext.web.RoutingContext;
@@ -31,34 +32,22 @@ public class DataResource {
     @POST
     @Path(":className")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String create(RoutingContext context) throws FlowException {
-        HttpServerRequest request = context.request();
-        String tableName = request.getParam("className");
-        String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
-        String bodyString = context.getBodyAsString();
-        BaseEntity entity = storage.insert(databaseName, tableName, bodyString);
+    public String create(RoutingContextWrapper context) throws FlowException {
+        BaseEntity entity = storage.insert(context.getDatabaseName(), context.getTableName(), context.getBodyAsString());
         return ResponseCreator.newCreateResponse(entity);
     }
 
     @GET
     @Path(":className/:objectId")
-    public String get(RoutingContext context) throws FlowException {
-        HttpServerRequest request = context.request();
-        String tableName = request.getParam("className");
-        String objectId = request.getParam("objectId");
-        String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
-        BaseEntity entity = storage.findById(databaseName, tableName, objectId);
+    public String get(RoutingContextWrapper context) throws FlowException {
+        BaseEntity entity = storage.findById(context.getDatabaseName(), context.getTableName(), context.getObjectId());
         return ResponseCreator.newQueryResponse(entity);
     }
 
     @DELETE
     @Path(":className/:objectId")
-    public String delete(RoutingContext context) throws FlowException {
-        HttpServerRequest request = context.request();
-        String tableName = request.getParam("className");
-        String objectId = request.getParam("objectId");
-        String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
-        int n = storage.delete(databaseName, tableName, objectId);
+    public String delete(RoutingContextWrapper context) throws FlowException {
+        int n = storage.delete(context.getDatabaseName(), context.getTableName(), context.getObjectId());
         return ResponseCreator.newDeleteResponse(n);
     }
 
@@ -70,17 +59,17 @@ public class DataResource {
 
     @PUT
     @Path(":className/:objectId")
-    public void update(RoutingContext context) {
-        HttpServerRequest request = context.request();
-        String tableName = request.getParam("className");
-        String objectId = request.getParam("objectId");
-
-        // TODO: 5/25/16
+    public String update(RoutingContextWrapper context) throws FlowException {
+//        HttpServerRequest request = context.request();
+//        String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
+//        String tableName = request.getParam("className");
+//        String objectId = request.getParam("objectId");
+        BaseEntity entity = storage.findById(context.getDatabaseName(), context.getTableName(), context.getObjectId());
+        return ResponseCreator.newQueryResponse(entity);
     }
 
-    //TODO
     @POST
-    @Path("count")
+    @Path(":className/count")
     public String count(RoutingContext context) throws FlowException {
         HttpServerRequest request = context.request();
         String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
@@ -92,19 +81,13 @@ public class DataResource {
 
     @POST
     @Path(":className/query")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void findAll(RoutingContext context) {
+    public String findAll(RoutingContext context) throws FlowException {
         HttpServerRequest request = context.request();
         String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
         String tableName = request.getParam("className");
         String query = context.getBodyAsString();
-        try {
-            List<BaseEntity> entities = storage.findAll(databaseName, tableName, query);
-        } catch (FlowException e) {
-            e.printStackTrace();
-        }
-
-        // TODO: 5/25/16
+        List<BaseEntity> entities = storage.findAll(databaseName, tableName, query);
+        return ResponseCreator.newQueryResponse(entities);
     }
 
 }

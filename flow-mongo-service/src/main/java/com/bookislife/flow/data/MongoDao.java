@@ -4,8 +4,6 @@ import com.bookislife.flow.core.domain.BaseEntity;
 import com.bookislife.flow.core.exception.FlowException;
 import com.bookislife.flow.core.utils.ObjectTraverser;
 import com.bookislife.flow.core.utils.Validator;
-import com.bookislife.flow.data.utils.QueryValidator;
-import com.mongodb.DBRef;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.CountOptions;
@@ -157,14 +155,13 @@ public class MongoDao implements BaseDao {
                     }
 
 
-
 //                    else if(map.containsKey("$ref")){
 //                        // TODO: 16/6/18
 //                        String id = (String) map.get("$id");
 //                        String ref= (String) map.get("$ref");
 //                        new DBRef(ref, new ObjectId(ref));
 //                    }
-                else if (map.containsKey("$regex") && map.get("$regex") instanceof String) {
+                    else if (map.containsKey("$regex") && map.get("$regex") instanceof String) {
                         String regex = (String) map.get("$regex");
                         int flag = 0;
                         String[] array = regex.split("/");
@@ -186,7 +183,7 @@ public class MongoDao implements BaseDao {
     }
 
     private MongoEntity toMongoEntity(Document document) {
-        if(null==document)return null;
+        if (null == document) return null;
         Document documentResult = new ObjectTraverser<Document>(document) {
             @Override
             public boolean visit(Object object) {
@@ -208,7 +205,11 @@ public class MongoDao implements BaseDao {
     private Document toDocument(BaseQuery query) {
         if (null == query) return new Document();
         if (query instanceof MongoQuery) {
-            return toQuery(((MongoQuery) query).getQuery());
+            MongoQuery mongoQuery = (MongoQuery) query;
+            if (mongoQuery.getCondition() == null) {
+                return new Document();
+            }
+            return toQuery(mongoQuery.getQuery());
         }
         throw new IllegalArgumentException("MongoQuery is expected, actual is " + query.getClass().getName());
     }

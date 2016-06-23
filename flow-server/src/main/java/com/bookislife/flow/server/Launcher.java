@@ -1,6 +1,8 @@
 package com.bookislife.flow.server;
 
 import com.bookislife.flow.core.exception.FlowException;
+import com.bookislife.flow.server.domain.RequestMapping;
+import com.bookislife.flow.server.domain.RoutingContextWrapper;
 import com.bookislife.flow.server.utils.ResponseCreator;
 import com.bookislife.flow.server.utils.Runner;
 import com.bookislife.flow.server.web.ResourceDescriptor;
@@ -11,6 +13,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.ext.web.Route;
 import io.vertx.rxjava.ext.web.Router;
@@ -117,7 +120,8 @@ public class Launcher extends AbstractVerticle {
 
                             try {
                                 assert method != null;
-                                Object result = method.invoke(singleton, ctx);
+                                RoutingContextWrapper wrapper = new RoutingContextWrapper((RoutingContext) ctx.getDelegate());
+                                Object result = method.invoke(singleton, wrapper);
                                 if (result != null) {
                                     if (defaultConsumeType.contains(MediaType.APPLICATION_JSON)) {
                                         ctx.response()
@@ -131,10 +135,9 @@ public class Launcher extends AbstractVerticle {
                             }
                             // process errors from resource handler
                             catch (InvocationTargetException e) {
-                                Throwable cause=e.getCause();
-                                if(e.getCause() instanceof  FlowException){
+                                Throwable cause = e.getCause();
+                                if (e.getCause() instanceof FlowException) {
                                     ctx.response().putHeader("Content-Type", MediaType.APPLICATION_JSON).end(ResponseCreator.newErrorResponse((FlowException) cause));
-
                                     return;
                                 }
                                 logger.error("error occurs when invoking methods", e);

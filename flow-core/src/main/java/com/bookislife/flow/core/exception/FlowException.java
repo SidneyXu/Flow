@@ -7,6 +7,7 @@ public class FlowException extends Exception {
 
     public static final int UNKNOWN_ERROR = -1;
     public static final int OBJECT_NOT_FOUND = 200;
+    public static final int ILLEGAL_ARGUMENTS = 201;
 
     public final int errorCode;
     public final String errorMessage;
