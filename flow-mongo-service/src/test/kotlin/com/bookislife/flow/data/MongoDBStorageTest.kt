@@ -202,6 +202,27 @@ class MongoDBStorageTest {
     }
 
     @Test
+    fun update2() {
+        val list = perpareQueryData()
+        val modifier = """
+        {
+            "modifiers":{
+                "${'$'}set":{
+                    "name":"Foobar"
+                }
+            }
+        }
+        """
+        val n = stoarge.updateById(databaseName, tableName, list[2].id, modifier)
+        println(n)
+
+        val result = stoarge.findAll(databaseName, tableName, null)
+        result.forEach {
+            println(it)
+        }
+    }
+
+    @Test
     fun testEq() {
         val list = perpareQueryData()
         val expect = list.map {

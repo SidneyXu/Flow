@@ -3,8 +3,6 @@ package com.bookislife.flow.server.resource;
 import com.bookislife.flow.core.Env;
 import com.bookislife.flow.core.domain.BaseEntity;
 import com.bookislife.flow.core.exception.FlowException;
-import com.bookislife.flow.data.BaseQuery;
-import com.bookislife.flow.data.Condition;
 import com.bookislife.flow.data.DBStorage;
 import com.bookislife.flow.server.domain.RoutingContextWrapper;
 import com.bookislife.flow.server.utils.ResponseCreator;
@@ -62,17 +60,8 @@ public class DataResource {
     @PUT
     @Path(":className/:objectId")
     public String update(RoutingContextWrapper context) throws FlowException {
-//        HttpServerRequest request = context.request();
-//        String databaseName = request.getHeader(Env.Header.APPLICATION_ID);
-//        String tableName = request.getParam("className");
-//        String objectId = request.getParam("objectId");
-        BaseQuery query=BaseQuery.from(context.getTableName());
-        Condition condition=query.newCondition().eq("id",context.getObjectId()).create();
-        query.setCondition(condition);
-//        storage.update(context.getDatabaseName(),context.getTableName(), query, )
-
-        BaseEntity entity = storage.findById(context.getDatabaseName(), context.getTableName(), context.getObjectId());
-        return ResponseCreator.newQueryResponse(entity);
+        int n = storage.updateById(context.getDatabaseName(), context.getTableName(), context.getObjectId(), context.getBodyAsString());
+        return ResponseCreator.newUpdateResponse(n);
     }
 
     @POST

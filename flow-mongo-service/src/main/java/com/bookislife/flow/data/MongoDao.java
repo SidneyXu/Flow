@@ -78,6 +78,13 @@ public class MongoDao implements BaseDao {
                 .getModifiedCount();
     }
 
+    @Override
+    public int update(String database, String tableName, String id, BaseModifier modifier) throws FlowException {
+        return (int) getCollection(database, tableName)
+                .updateOne(eq("_id", new ObjectId(id)), toDocument(modifier))
+                .getModifiedCount();
+    }
+
     private Document toDocument(MongoEntity mongoEntity) {
         Document document = mongoEntity.document;
         return new ObjectTraverser<Document>(document) {

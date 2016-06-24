@@ -20,6 +20,8 @@ public class MongoDBStorage implements DBStorage {
 
     @Override
     public BaseEntity findById(String database, String tableName, String id) {
+
+        // TODO: 6/24/16  
         return mongoDao.findById(database, tableName, id);
     }
 
@@ -64,6 +66,17 @@ public class MongoDBStorage implements DBStorage {
             mongoModifier.modifier(BaseModifier.SET, newUpdater);
         }
         return mongoDao.update(database, tableName, mongoQuery, mongoModifier);
+    }
+
+    @Override
+    public int updateById(String database, String tableName, String id, String modifier) throws FlowException {
+        BaseModifier mongoModifier = JacksonDecoder.decode(modifier, BaseModifier.class);
+        if (mongoModifier != null) {
+            Map<String, Object> newUpdater = new HashMap<>();
+            newUpdater.put(BaseEntity.FIELD_UPDATED_AT, System.currentTimeMillis());
+            mongoModifier.modifier(BaseModifier.SET, newUpdater);
+        }
+        return mongoDao.update(database, tableName, id, mongoModifier);
     }
 
     @Override

@@ -31,6 +31,10 @@ public abstract class JSONParser {
         return parser.internalDecode(json, type);
     }
 
+    public static String encode(Object object) {
+        return parser.internalEncode(object);
+    }
+
     protected abstract <T> T internalDecode(String json, Class<T> type);
 
     protected abstract String internalEncode(Object object);

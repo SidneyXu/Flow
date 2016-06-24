@@ -22,6 +22,8 @@ public interface DBStorage {
 
     int update(String database, String tableName, String query, String modifier) throws FlowException;
 
+    int updateById(String database, String tableName, String id, String modifier) throws FlowException;
+
     int delete(String database, String tableName, String id) throws FlowException;
 
     int deleteAll(String database, String tableName, String query) throws FlowException;

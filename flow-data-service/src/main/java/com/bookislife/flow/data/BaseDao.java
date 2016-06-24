@@ -19,6 +19,11 @@ public interface BaseDao {
                BaseQuery query,
                BaseModifier modifier) throws FlowException;
 
+    int update(String database,
+               String tableName,
+               String id,
+               BaseModifier modifier) throws FlowException;
+
     BaseEntity insertOrUpdate() throws FlowException;
 
     void batchInsert(String database, String tableName, List<? extends BaseEntity> entities) throws FlowException;

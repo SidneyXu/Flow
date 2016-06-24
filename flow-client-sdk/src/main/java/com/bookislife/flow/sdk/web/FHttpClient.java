@@ -1,7 +1,7 @@
 package com.bookislife.flow.sdk.web;
 
 import com.bookislife.flow.core.exception.FlowException;
-import com.bookislife.flow.sdk.parser.JSONDecoder;
+import com.bookislife.flow.sdk.parser.JSONParser;
 
 import java.io.InputStream;
 
@@ -26,7 +26,7 @@ public class FHttpClient {
         if (!response.isSuccessful()) {
             if (response.isJsonResponse()) {
                 String json = response.getBodyAsString();
-                throw JSONDecoder.decode(json, FlowException.class);
+                throw JSONParser.decode(json, FlowException.class);
             }
             throw new FlowException(response.getStatusCode(), response.getBodyAsString());
         }

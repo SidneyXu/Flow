@@ -16,7 +16,7 @@ class JSONDecoderTest {
             "errorMessage": "foobar"
         }
         """
-        val e = JSONDecoder.decode(json, FlowException::class.java)
+        val e = JSONParser.decode(json, FlowException::class.java)
         println(e)
         println("${e.errorCode} -> ${e.errorMessage}")
     }
@@ -29,8 +29,8 @@ class JSONDecoderTest {
             "errorMessage": "foobar"
         }
         """
-        JSONDecoder.setDecoder(GsonDecoder())
-        val e = JSONDecoder.decode(json, FlowException::class.java)
+        JSONParser.setParser(GsonParser())
+        val e = JSONParser.decode(json, FlowException::class.java)
         println(e)
         println("${e.errorCode} -> ${e.errorMessage}")
     }

@@ -35,6 +35,18 @@ public class ResponseCreator {
                 .build();
     }
 
+    public static String newUpdateResponse(int n) {
+        if (n == 0) {
+            return JacksonJsonBuilder.create()
+                    .put(FIELD_ERROR_CODE, FlowException.OBJECT_NOT_FOUND)
+                    .put(FIELD_ERROR_MESSAGE, "Object not found for updating.")
+                    .build();
+        }
+        return JacksonJsonBuilder.create()
+                .put(FIELD_COUNT, n)
+                .build();
+    }
+
     public static String newCountResponse(long n) {
         return JacksonJsonBuilder.create()
                 .put(FIELD_COUNT, n)
@@ -92,4 +104,5 @@ public class ResponseCreator {
                 .put(FIELD_ERROR_MESSAGE, e.errorMessage)
                 .build();
     }
+
 }

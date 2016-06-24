@@ -72,4 +72,17 @@ public class BaseEntity {
     public void setData(Map<String, Object> data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("BaseEntity{");
+        sb.append("createdAt=").append(createdAt);
+        sb.append(", updatedAt=").append(updatedAt);
+        sb.append(", id='").append(id).append('\'');
+        sb.append(", enableFlg=").append(enableFlg);
+        sb.append(", deleteFlg=").append(deleteFlg);
+        sb.append(", data=").append(data);
+        sb.append('}');
+        return sb.toString();
+    }
 }

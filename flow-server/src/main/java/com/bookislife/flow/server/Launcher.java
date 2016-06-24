@@ -137,11 +137,11 @@ public class Launcher extends AbstractVerticle {
                             catch (InvocationTargetException e) {
                                 Throwable cause = e.getCause();
                                 if (e.getCause() instanceof FlowException) {
-                                    ctx.response().putHeader("Content-Type", MediaType.APPLICATION_JSON).end(ResponseCreator.newErrorResponse((FlowException) cause));
+                                    ctx.response().setStatusCode(400).putHeader("Content-Type", MediaType.APPLICATION_JSON).end(ResponseCreator.newErrorResponse((FlowException) cause));
                                     return;
                                 }
                                 logger.error("error occurs when invoking methods", e);
-                                ctx.response().putHeader("Content-Type", MediaType.APPLICATION_JSON).end(ResponseCreator.newErrorResponse(cause.getMessage()));
+                                ctx.response().setStatusCode(400).putHeader("Content-Type", MediaType.APPLICATION_JSON).end(ResponseCreator.newErrorResponse(cause.getMessage()));
                             }
                         }, executorService));
                     });

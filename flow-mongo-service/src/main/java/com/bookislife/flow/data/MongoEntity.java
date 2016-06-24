@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.Document;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -33,8 +32,10 @@ public class MongoEntity extends BaseEntity {
         if (data == null) {
             data = map;
         }
-        setCreatedAt((Long) map.getOrDefault(FIELD_CREATED_AT, 0L));
-        setUpdatedAt((Long) map.getOrDefault(FIELD_UPDATED_AT, getCreatedAt()));
+        // (Long) would call cast exception: int -> long
+
+        setCreatedAt(Long.valueOf(map.getOrDefault(FIELD_CREATED_AT, 0L).toString()));
+        setUpdatedAt(Long.valueOf(map.getOrDefault(FIELD_UPDATED_AT, getCreatedAt()).toString()));
         setId((String) map.getOrDefault(FIELD_ID, null));
     }
 

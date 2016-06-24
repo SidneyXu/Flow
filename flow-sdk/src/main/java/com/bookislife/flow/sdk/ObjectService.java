@@ -11,4 +11,6 @@ public interface ObjectService {
     void save(String type, BaseEntity entity) throws FlowException;
 
     void delete(String id);
+
+    BaseEntity get(String type, String id) throws FlowException;
 }
