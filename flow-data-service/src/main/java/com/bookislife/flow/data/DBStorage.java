@@ -18,6 +18,8 @@ public interface DBStorage {
 
     BaseEntity insert(String database, String tableName, String data) throws FlowException;
 
+    BaseEntity insert(String database, String tableName, BaseEntity entity) throws FlowException;
+
     int update(String database, String tableName, String query, String modifier) throws FlowException;
 
     int delete(String database, String tableName, String id) throws FlowException;

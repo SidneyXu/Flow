@@ -6,11 +6,11 @@ import com.google.gson.GsonBuilder;
 /**
  * Created by SidneyXu on 2016/06/14.
  */
-public class GsonDecoder extends JSONDecoder {
+public class GsonParser extends JSONParser {
 
     private Gson gson;
 
-    public GsonDecoder() {
+    public GsonParser() {
         gson = new GsonBuilder()
                 .create();
     }
@@ -18,5 +18,10 @@ public class GsonDecoder extends JSONDecoder {
     @Override
     protected <T> T internalDecode(String json, Class<T> type) {
         return gson.fromJson(json, type);
+    }
+
+    @Override
+    protected String internalEncode(Object object) {
+        return gson.toJson(object);
     }
 }

@@ -44,6 +44,17 @@ public class MongoDBStorage implements DBStorage {
     }
 
     @Override
+    public BaseEntity insert(String database, String tableName, BaseEntity entity) throws FlowException {
+        MongoEntity document = new MongoEntity(entity.getData());
+        long current = System.currentTimeMillis();
+        document.setCreatedAt(current);
+        document.setUpdatedAt(current);
+        String id = mongoDao.insert(database, tableName, document);
+        document.setId(id);
+        return document;
+    }
+
+    @Override
     public int update(String database, String tableName, String query, String modifier) throws FlowException {
         MongoQuery mongoQuery = JacksonDecoder.decode(query, MongoQuery.class);
         BaseModifier mongoModifier = JacksonDecoder.decode(modifier, BaseModifier.class);

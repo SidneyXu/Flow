@@ -68,4 +68,8 @@ public class BaseEntity {
         if (null == data) return null;
         return Collections.unmodifiableMap(data);
     }
+
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
 }

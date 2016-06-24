@@ -1,5 +1,6 @@
 package com.bookislife.flow.data
 
+import com.bookislife.flow.core.domain.BaseEntity
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.junit.After
@@ -36,6 +37,22 @@ class MongoDBStorageTest {
             "admin":true
         }
         """
+        val entity = stoarge.insert(databaseName, tableName, data)
+        println(entity)
+        assert(entity.id != null)
+        assert(entity.createdAt != 0L)
+        assert(entity.updatedAt != 0L)
+        assert(entity.createdAt == entity.updatedAt)
+    }
+
+    @Test
+    fun testInsert2() {
+        val data = BaseEntity()
+        val map = mapOf(
+                Pair("name", "Jane"),
+                Pair("age", 20)
+        )
+        data.data = map
         val entity = stoarge.insert(databaseName, tableName, data)
         println(entity)
         assert(entity.id != null)
