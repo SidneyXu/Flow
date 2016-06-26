@@ -1,7 +1,6 @@
 package com.bookislife.flow.server;
 
 import com.bookislife.flow.core.exception.FlowException;
-import com.bookislife.flow.server.domain.RequestMapping;
 import com.bookislife.flow.server.domain.RoutingContextWrapper;
 import com.bookislife.flow.server.utils.ResponseCreator;
 import com.bookislife.flow.server.utils.Runner;
@@ -156,4 +155,7 @@ public class Launcher extends AbstractVerticle {
         serverConfig = new ServerConfig();
     }
 
+    public Injector getInjector() {
+        return injector;
+    }
 }
