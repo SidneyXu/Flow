@@ -2,6 +2,7 @@ package com.bookislife.flow.server.utils;
 
 import com.bookislife.flow.core.domain.BaseEntity;
 import com.bookislife.flow.core.exception.FlowException;
+import com.bookislife.flow.core.utils.Pair;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,27 +24,22 @@ public class ResponseCreator {
                 .build();
     }
 
-    public static String newDeleteResponse(int n) {
+    public static String newDeleteResponse(int n) throws FlowException {
         if (n == 0) {
-            return JacksonJsonBuilder.create()
-                    .put(FIELD_ERROR_CODE, FlowException.OBJECT_NOT_FOUND)
-                    .put(FIELD_ERROR_MESSAGE, "Object not found for deleting.")
-                    .build();
+            throw new FlowException(FlowException.OBJECT_NOT_FOUND, "Object not found for deleting.");
         }
         return JacksonJsonBuilder.create()
                 .put(FIELD_COUNT, n)
                 .build();
     }
 
-    public static String newUpdateResponse(int n) {
-        if (n == 0) {
-            return JacksonJsonBuilder.create()
-                    .put(FIELD_ERROR_CODE, FlowException.OBJECT_NOT_FOUND)
-                    .put(FIELD_ERROR_MESSAGE, "Object not found for updating.")
-                    .build();
+    public static String newUpdateResponse(Pair<Integer, Long> pair) throws FlowException {
+        if (pair.second == 0) {
+            throw new FlowException(FlowException.OBJECT_NOT_FOUND, "Object not found for updating.");
         }
         return JacksonJsonBuilder.create()
-                .put(FIELD_COUNT, n)
+                .put(FIELD_COUNT, pair.first)
+                .put(BaseEntity.FIELD_UPDATED_AT, pair.second)
                 .build();
     }
 
@@ -53,12 +49,9 @@ public class ResponseCreator {
                 .build();
     }
 
-    public static String newQueryResponse(BaseEntity entity) {
-        if (null == entity) {
-            return JacksonJsonBuilder.create()
-                    .put(FIELD_ERROR_CODE, FlowException.OBJECT_NOT_FOUND)
-                    .put(FIELD_ERROR_MESSAGE, "Object not found.")
-                    .build();
+    public static String newQueryResponse(BaseEntity entity) throws FlowException {
+        if (entity == null) {
+            throw new FlowException(FlowException.OBJECT_NOT_FOUND, "Object not found.");
         }
         return JacksonJsonBuilder.create()
                 .put(BaseEntity.FIELD_DATA, entity.getData())
@@ -66,12 +59,9 @@ public class ResponseCreator {
                 .build();
     }
 
-    public static String newQueryResponse(List<? extends BaseEntity> entities) {
+    public static String newQueryResponse(List<? extends BaseEntity> entities) throws FlowException {
         if (null == entities || entities.isEmpty()) {
-            return JacksonJsonBuilder.create()
-                    .put(FIELD_ERROR_CODE, FlowException.OBJECT_NOT_FOUND)
-                    .put(FIELD_ERROR_MESSAGE, "Object not found.")
-                    .build();
+            throw new FlowException(FlowException.OBJECT_NOT_FOUND, "Object not found.");
         } else {
             Object[] arrays = entities.stream().map(o ->
                     new HashMap<String, Object>() {{

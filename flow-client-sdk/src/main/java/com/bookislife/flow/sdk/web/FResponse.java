@@ -14,6 +14,7 @@ public class FResponse {
     private final FHeader header;
     private final int statusCode;
     private final InputStream inputStream;
+    private byte[] cachedResponse;
 
     public FResponse(FHeader header, int statusCode, InputStream inputStream) {
         this.header = header;
@@ -64,9 +65,12 @@ public class FResponse {
     }
 
     public String getBodyAsString() {
-        byte[] bytes = getBodyAsByte();
-        if (bytes == null || bytes.length == 0) return null;
-        return new String(bytes, Charset.forName("UTF-8"));
+        if (cachedResponse != null) {
+            return new String(cachedResponse, Charset.forName("UTF-8"));
+        }
+        cachedResponse = getBodyAsByte();
+        if (cachedResponse == null || cachedResponse.length == 0) return null;
+        return new String(cachedResponse, Charset.forName("UTF-8"));
     }
 
     public InputStream getBodyAsStream() {

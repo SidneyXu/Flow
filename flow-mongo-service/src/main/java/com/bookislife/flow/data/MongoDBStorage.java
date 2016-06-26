@@ -2,6 +2,7 @@ package com.bookislife.flow.data;
 
 import com.bookislife.flow.core.domain.BaseEntity;
 import com.bookislife.flow.core.exception.FlowException;
+import com.bookislife.flow.core.utils.Pair;
 import com.bookislife.flow.data.utils.JacksonDecoder;
 import com.bookislife.flow.data.utils.QueryValidator;
 
@@ -69,14 +70,17 @@ public class MongoDBStorage implements DBStorage {
     }
 
     @Override
-    public int updateById(String database, String tableName, String id, String modifier) throws FlowException {
+    public Pair<Integer, Long> updateById(String database, String tableName, String id, String modifier) throws FlowException {
         BaseModifier mongoModifier = JacksonDecoder.decode(modifier, BaseModifier.class);
+        long updatedAt = 0;
         if (mongoModifier != null) {
+            updatedAt = System.currentTimeMillis();
             Map<String, Object> newUpdater = new HashMap<>();
-            newUpdater.put(BaseEntity.FIELD_UPDATED_AT, System.currentTimeMillis());
+            newUpdater.put(BaseEntity.FIELD_UPDATED_AT, updatedAt);
             mongoModifier.modifier(BaseModifier.SET, newUpdater);
         }
-        return mongoDao.update(database, tableName, id, mongoModifier);
+        int n = mongoDao.update(database, tableName, id, mongoModifier);
+        return new Pair<>(n, updatedAt);
     }
 
     @Override

@@ -43,7 +43,9 @@ public class OKHttpRequestClient extends RequestClient<Request, Response> {
         RequestBody body = null;
         if (fRequest.shouldHasBody()) {
             FBody fBody = fRequest.getBody();
-            body = RequestBody.create(MediaType.parse(fBody.getContentType()), fBody.getData());
+            if (fBody != null) {
+                body = RequestBody.create(MediaType.parse(fBody.getContentType()), fBody.getData());
+            }
         }
         Request.Builder build = new Request.Builder()
                 .url(fRequest.getUrl())

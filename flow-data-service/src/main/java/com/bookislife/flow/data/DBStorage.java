@@ -2,6 +2,7 @@ package com.bookislife.flow.data;
 
 import com.bookislife.flow.core.domain.BaseEntity;
 import com.bookislife.flow.core.exception.FlowException;
+import com.bookislife.flow.core.utils.Pair;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface DBStorage {
 
     int update(String database, String tableName, String query, String modifier) throws FlowException;
 
-    int updateById(String database, String tableName, String id, String modifier) throws FlowException;
+    Pair<Integer, Long> updateById(String database, String tableName, String id, String modifier) throws FlowException;
 
     int delete(String database, String tableName, String id) throws FlowException;
 

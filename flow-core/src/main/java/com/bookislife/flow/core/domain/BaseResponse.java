@@ -1,6 +1,7 @@
 package com.bookislife.flow.core.domain;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,5 +43,9 @@ public class BaseResponse<K, V> extends HashMap<K, V> {
 
     public Map<String, Object> getData() {
         return (Map<String, Object>) get("data");
+    }
+
+    public List<Map<String, Object>> getDatas() {
+        return (List<Map<String, Object>>) get("datas");
     }
 }
